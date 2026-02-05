@@ -40,3 +40,30 @@ The platform is designed to encourage open discussion, structured feedback, and 
 - AWS / Azure deployment
 - CI/CD pipeline
 
+---
+
+## 🧠 System Architecture
+
+React
+↓
+ASP.NET Core Web API
+↓
+Entity Framework Core
+↓
+PostgreSQL Database
+
+---
+
+## 🗄️ Database Design
+
+The system uses a relational database to ensure data integrity and scalability.  
+See the database schema section below for full details.
+
+---
+
+## 🔐 Authentication
+
+- JWT-based authentication
+- Secure password hashing
+- Role-based authorisation
+- Token validation middleware
