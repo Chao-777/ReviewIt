@@ -33,11 +33,10 @@ The platform is designed to encourage open discussion, structured feedback, and 
 - **PostgreSQL**
 
 ### Frontend
-- **React** (or Blazor – optional)
+- React
 
 ### DevOps / Cloud (planned)
 - Docker
 - AWS / Azure deployment
 - CI/CD pipeline
 
----
