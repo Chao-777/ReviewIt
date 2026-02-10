@@ -1,0 +1,30 @@
+.stars {
+  display: inline-flex;
+  gap: 0.1em;
+  color: var(--star);
+}
+
+.stars-sm .star { font-size: 0.9rem; }
+.stars-md .star { font-size: 1.1rem; }
+
+.star {
+  opacity: 0.35;
+}
+
+.star.filled {
+  opacity: 1;
+}
+
+.stars-interactive .star {
+  cursor: pointer;
+}
+
+.stars-interactive .star:hover,
+.stars-interactive .star:focus {
+  opacity: 0.8;
+}
+
+.stars-interactive .star.filled:hover,
+.stars-interactive .star.filled:focus {
+  opacity: 1;
+}
