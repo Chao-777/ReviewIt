@@ -1,12 +1,37 @@
+import { useState, useEffect, useRef } from 'react'
 import { Outlet, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { api } from '../api/client'
 import './Layout.css'
 
 export default function Layout() {
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const { user, logout, isAuthenticated } = useAuth()
   const q = searchParams.get('q') ?? ''
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!isAuthenticated) return
+    api.notifications
+      .list(true)
+      .then((list) => setUnreadCount(list.length))
+      .catch(() => setUnreadCount(0))
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [dropdownOpen])
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -17,6 +42,8 @@ export default function Layout() {
       navigate(`/search?q=${encodeURIComponent(v)}`)
     }
   }
+
+  const closeDropdown = () => setDropdownOpen(false)
 
   return (
     <div className="layout">
@@ -36,19 +63,56 @@ export default function Layout() {
         <nav className="nav">
           {isAuthenticated ? (
             <>
-              <button type="button" className="nav-link" onClick={() => navigate('/notifications')}>
-                Notifications
-              </button>
               <button type="button" className="nav-link" onClick={() => navigate('/create-item')}>
                 Create item
               </button>
-              <span className="nav-user">{user?.name}</span>
-              <button type="button" className="nav-link" onClick={() => logout()}>
-                Log out
-              </button>
+              <div className="user-dropdown" ref={dropdownRef}>
+                <button
+                  type="button"
+                  className="user-dropdown-trigger"
+                  onClick={() => setDropdownOpen((o) => !o)}
+                  aria-expanded={dropdownOpen}
+                  aria-haspopup="true"
+                >
+                  <span className="user-dropdown-name">{user?.name}</span>
+                  <span className="user-dropdown-chevron" aria-hidden>▼</span>
+                </button>
+                {dropdownOpen && (
+                  <div className="user-dropdown-menu" role="menu">
+                    <button
+                      type="button"
+                      className="user-dropdown-item"
+                      role="menuitem"
+                      onClick={() => {
+                        closeDropdown()
+                        navigate('/notifications')
+                      }}
+                    >
+                      Notifications
+                      {unreadCount > 0 && (
+                        <span className="user-dropdown-badge" aria-label={`${unreadCount} unread`}>
+                          {unreadCount > 99 ? '99+' : unreadCount}
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      className="user-dropdown-item"
+                      role="menuitem"
+                      onClick={() => {
+                        closeDropdown()
+                        logout()
+                      }}
+                    >
+                      Log out
+                    </button>
+                  </div>
+                )}
+              </div>
             </>
           ) : (
             <>
+              <span className="nav-guest-icon" aria-hidden>👤</span>
               <button type="button" className="nav-link" onClick={() => navigate('/login')}>
                 Log in
               </button>
