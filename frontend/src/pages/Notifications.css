@@ -1,0 +1,58 @@
+.notifications-page {
+  max-width: 560px;
+}
+
+.notifications-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.notifications-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.notifications-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-item {
+  display: block;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.notification-item:hover {
+  border-color: var(--accent);
+}
+
+.notification-item.unread {
+  border-left: 3px solid var(--accent);
+}
+
+.notification-type {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.notification-from {
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+.notification-date {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
