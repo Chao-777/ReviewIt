@@ -18,9 +18,11 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest req)
     {
-        var user = await _auth.RegisterAsync(req.Name, req.Email, req.Phone, req.Password);
+        var (user, errorMessage) = await _auth.RegisterAsync(req.Name, req.Email, req.Phone, req.Password);
+        if (errorMessage != null)
+            return BadRequest(new { message = errorMessage });
         if (user == null)
-            return BadRequest("Email already registered.");
+            return BadRequest(new { message = "Registration failed." });
         var token = _auth.GenerateJwt(user);
         return Ok(new AuthResponse(user.Id, user.Name, user.Email, token));
     }
