@@ -1,11 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
-import { Outlet, useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { Outlet, useNavigate, useSearchParams, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../api/client'
 import './Layout.css'
 
+const NOTIFICATIONS_UPDATED = 'notifications-updated'
+
+export function notifyUnreadCountUpdated() {
+  window.dispatchEvent(new CustomEvent(NOTIFICATIONS_UPDATED))
+}
+
 export default function Layout() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const { user, logout, isAuthenticated } = useAuth()
   const q = searchParams.get('q') ?? ''
@@ -13,12 +20,27 @@ export default function Layout() {
   const [unreadCount, setUnreadCount] = useState(0)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
+  const fetchUnreadCount = () => {
     if (!isAuthenticated) return
     api.notifications
       .list(true)
       .then((list) => setUnreadCount(list.length))
       .catch(() => setUnreadCount(0))
+  }
+
+  useEffect(() => {
+    if (!isAuthenticated) return
+    fetchUnreadCount()
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    if (isAuthenticated) fetchUnreadCount()
+  }, [location.pathname, isAuthenticated])
+
+  useEffect(() => {
+    const handler = () => fetchUnreadCount()
+    window.addEventListener(NOTIFICATIONS_UPDATED, handler)
+    return () => window.removeEventListener(NOTIFICATIONS_UPDATED, handler)
   }, [isAuthenticated])
 
   useEffect(() => {
@@ -73,8 +95,14 @@ export default function Layout() {
                   onClick={() => setDropdownOpen((o) => !o)}
                   aria-expanded={dropdownOpen}
                   aria-haspopup="true"
+                  aria-label={unreadCount > 0 ? `${unreadCount} unread notifications` : 'Account menu'}
                 >
                   <span className="user-dropdown-name">{user?.name}</span>
+                  {unreadCount > 0 && (
+                    <span className="user-dropdown-trigger-badge" aria-label={`${unreadCount} unread`}>
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
                   <span className="user-dropdown-chevron" aria-hidden>▼</span>
                 </button>
                 {dropdownOpen && (

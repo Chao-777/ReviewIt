@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api, Notification } from '../api/client'
 import { useAuth } from '../context/AuthContext'
+import { notifyUnreadCountUpdated } from '../components/Layout'
 import './Notifications.css'
 
 export default function Notifications() {
@@ -21,11 +22,13 @@ export default function Notifications() {
   const markRead = async (id: number) => {
     await api.notifications.markRead(id)
     setList((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)))
+    notifyUnreadCountUpdated()
   }
 
   const markAllRead = async () => {
     await api.notifications.markAllRead()
     setList((prev) => prev.map((n) => ({ ...n, isRead: true })))
+    notifyUnreadCountUpdated()
   }
 
   const goToItem = (n: Notification) => {
