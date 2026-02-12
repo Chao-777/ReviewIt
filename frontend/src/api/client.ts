@@ -26,7 +26,7 @@ export async function request<T>(
 
 export const api = {
   auth: {
-    register: (data: { name: string; email: string; phone?: string; password: string }) =>
+    register: (data: { name: string; email: string; phone: string; password: string }) =>
       request<{ id: number; name: string; email: string; token: string }>('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
     login: (data: { email: string; password: string }) =>
       request<{ id: number; name: string; email: string; token: string }>('/auth/login', { method: 'POST', body: JSON.stringify(data) }),

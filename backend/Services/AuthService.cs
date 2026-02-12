@@ -19,20 +19,27 @@ public class AuthService
         _config = config;
     }
 
-    public async Task<User?> RegisterAsync(string name, string email, string? phone, string password)
+    /// <summary>
+    /// Returns (user, null) on success, or (null, errorMessage) when registration should be declined.
+    /// </summary>
+    public async Task<(User? user, string? errorMessage)> RegisterAsync(string name, string email, string phone, string password)
     {
+        if (string.IsNullOrWhiteSpace(phone))
+            return (null, "Phone number is required.");
         if (await _db.Users.AnyAsync(u => u.Email == email))
-            return null;
+            return (null, "Email already registered.");
+        if (await _db.Users.AnyAsync(u => u.Phone == phone))
+            return (null, "This phone number is already in use. Please use a different number.");
         var user = new User
         {
             Name = name,
             Email = email,
-            Phone = phone,
+            Phone = phone.Trim(),
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(password)
         };
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
-        return user;
+        return (user, null);
     }
 
     public async Task<User?> LoginAsync(string email, string password)

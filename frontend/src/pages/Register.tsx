@@ -17,9 +17,13 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    if (!phone.trim()) {
+      setError('Phone number is required.')
+      return
+    }
     setLoading(true)
     try {
-      const res = await api.auth.register({ name, email, phone: phone || undefined, password })
+      const res = await api.auth.register({ name, email, phone: phone.trim(), password })
       login(res.token, { id: res.id, name: res.name, email: res.email })
       navigate('/')
     } catch (err) {
@@ -56,12 +60,14 @@ export default function Register() {
             />
           </label>
           <label>
-            Phone <span className="muted">(optional)</span>
+            Phone <span className="required">*</span>
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              required
               autoComplete="tel"
+              placeholder="e.g. +1 234 567 8900"
             />
           </label>
           <label>
