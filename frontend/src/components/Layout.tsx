@@ -2,13 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { Outlet, useNavigate, useSearchParams, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../api/client'
+import { getNotificationsUpdatedEventName } from '../notifications'
 import './Layout.css'
-
-const NOTIFICATIONS_UPDATED = 'notifications-updated'
-
-export function notifyUnreadCountUpdated() {
-  window.dispatchEvent(new CustomEvent(NOTIFICATIONS_UPDATED))
-}
 
 export default function Layout() {
   const navigate = useNavigate()
@@ -38,9 +33,10 @@ export default function Layout() {
   }, [location.pathname, isAuthenticated])
 
   useEffect(() => {
+    const eventName = getNotificationsUpdatedEventName()
     const handler = () => fetchUnreadCount()
-    window.addEventListener(NOTIFICATIONS_UPDATED, handler)
-    return () => window.removeEventListener(NOTIFICATIONS_UPDATED, handler)
+    window.addEventListener(eventName, handler)
+    return () => window.removeEventListener(eventName, handler)
   }, [isAuthenticated])
 
   useEffect(() => {

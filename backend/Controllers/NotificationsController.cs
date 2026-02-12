@@ -8,7 +8,7 @@ using ReviewIt.Api.Models;
 namespace ReviewIt.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/notifications")]
 [Authorize]
 public class NotificationsController : ControllerBase
 {
@@ -74,6 +74,20 @@ public class NotificationsController : ControllerBase
     {
         var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
         await _db.Notifications.Where(n => n.UserId == userId).ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true));
+        return NoContent();
+    }
+
+    [HttpPost("delete-selected")]
+    public async Task<ActionResult> DeleteSelected([FromBody] DeleteNotificationsRequest? req)
+    {
+        if (req?.Ids == null || req.Ids.Length == 0)
+            return BadRequest("No notification ids provided.");
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        var toDelete = await _db.Notifications
+            .Where(n => n.UserId == userId && req.Ids.Contains(n.Id))
+            .ToListAsync();
+        _db.Notifications.RemoveRange(toDelete);
+        await _db.SaveChangesAsync();
         return NoContent();
     }
 }

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace ReviewIt.Api.DTOs;
 
 public record NotificationDto(
@@ -9,4 +11,6 @@ public record NotificationDto(
     bool IsRead,
     DateTime CreatedAt
 );
+
+public record DeleteNotificationsRequest([property: JsonPropertyName("ids")] int[] Ids);
 

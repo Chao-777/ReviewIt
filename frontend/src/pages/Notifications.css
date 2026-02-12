@@ -2,16 +2,52 @@
   max-width: 560px;
 }
 
+.notifications-error {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--danger);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
 .notifications-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
 .notifications-header h1 {
   margin: 0;
   font-size: 1.5rem;
+}
+
+.notifications-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-danger {
+  padding: 0.5rem 0.75rem;
+  background: rgba(248, 113, 113, 0.2);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .notifications-list {
@@ -21,14 +57,16 @@
 }
 
 .notification-item {
-  display: block;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
   padding: 1rem;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   margin-bottom: 0.5rem;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background 0.2s;
 }
 
 .notification-item:hover {
@@ -37,6 +75,40 @@
 
 .notification-item.unread {
   border-left: 3px solid var(--accent);
+}
+
+.notification-item.read {
+  background: var(--surface-hover);
+  opacity: 0.85;
+}
+
+.notification-item.read .notification-type,
+.notification-item.read .notification-from {
+  color: var(--text-muted);
+}
+
+.notification-item.read .notification-date {
+  color: var(--text-muted);
+  opacity: 0.9;
+}
+
+.notification-item.selected {
+  border-color: var(--danger);
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.notification-checkbox {
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+.notification-body {
+  flex: 1;
+  min-width: 0;
 }
 
 .notification-type {

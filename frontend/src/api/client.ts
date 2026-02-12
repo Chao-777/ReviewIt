@@ -9,13 +9,14 @@ export async function request<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const token = getToken();
+  const url = `${API_BASE}${path}`;
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
   if (token) (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  const res = await fetch(url, { ...options, headers });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ message: res.statusText }));
     throw new Error(err.message || res.statusText);
@@ -66,11 +67,14 @@ export const api = {
     create: (reviewId: number, content: string) =>
       request<Comment>('/comments', { method: 'POST', body: JSON.stringify({ reviewId, content }) }),
   },
+  // Notifications API: all paths under /api/notifications (see backend NotificationsController Route="api/notifications")
   notifications: {
     list: (unreadOnly?: boolean) =>
       request<Array<Notification>>(`/notifications${unreadOnly ? '?unreadOnly=true' : ''}`),
     markRead: (id: number) => request<void>(`/notifications/${id}/read`, { method: 'PUT' }),
     markAllRead: () => request<void>('/notifications/read-all', { method: 'PUT' }),
+    deleteSelected: (ids: number[]) =>
+      request<void>('/notifications/delete-selected', { method: 'POST', body: JSON.stringify({ ids }) }),
   },
 };
 
